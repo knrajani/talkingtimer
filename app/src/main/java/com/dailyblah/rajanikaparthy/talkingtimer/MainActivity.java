@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,9 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Locale;
@@ -24,51 +27,45 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     EditText mEditText;
-    //TextToSpeech mTextToSpeech;
     Spinner mSpinnerHour,mSpinnerMinute,mSpinnerSecond;
     long mHours,mMinutes,mSeconds = 0;
     CountDownTimer mCountDownTimer;
+    int mIntPending = 0;
+    PendingIntent pendingIntent;
+    AlarmManager alarmManager;
+    TextView mTextViewTimer;
+    Button mButtonStart,mButtonStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-       // ttsSetup();
 
+        mTextViewTimer = (TextView)findViewById(R.id.text_timer);
+        mButtonStart = (Button)findViewById(R.id.button_start);
+        mButtonStop = (Button)findViewById(R.id.button_stop);
 
-
-        findViewById(R.id.button_start).setOnClickListener(new View.OnClickListener() {
+        mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-
                 mEditText = findViewById(R.id.editText2);
+               // mEditText.setFocusable(false);
                 createAlarm(Long.parseLong(getTimeSetting()));
+               /* mButtonStart.setEnabled(false);
+                mButtonStop.setEnabled(true);*/
+               // mEditText.setFocusable(true);
 
-               /* mCountDownTimer = new CountDownTimer(Integer.parseInt(getTimeSetting()), 1000) {
-
-                    public void onTick(long millisUntilFinished) {
-                        System.out.println("seconds remaining: " + millisUntilFinished / 1000);
-                    }
-
-                    public void onFinish() {
-                        System.out.println("done!");
-
-
-                        speakOut();
-                    }
-                }.start();*/
-            }
+              }
         });
-        findViewById(R.id.button_stop).setOnClickListener(new View.OnClickListener() {
+        mButtonStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+               /* mButtonStart.setEnabled(true);
+                mButtonStop.setEnabled(false);*/
 
-                if(mCountDownTimer!= null)
-                {
-                    mCountDownTimer.cancel();
-                    cleanUp();
-                }
+
+                cleanUp();
             }
         });
 
@@ -143,68 +140,65 @@ public class MainActivity extends AppCompatActivity {
     public String getTimeSetting(){
         long result = 0;
         result = mSeconds * 1000 + mMinutes * 60 * 1000 + mHours * 60 * 60 * 1000;
-        System.out.println(result);
         return String.valueOf(result);
-
     }
-
-   /* public void ttsSetup(){
-        mTextToSpeech=new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR) {
-                    mTextToSpeech.setLanguage(Locale.UK);
-                }
-            }
-        });
-    }*/
-
-
-
-   /* private void speakOut(){
-
-        String text =  mEditText.getText().toString() + " Timer finished";
-
-        mTextToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null);
-
-
-
-        cleanUp();
-    }*/
 
     public void cleanUp(){
         mEditText.setText("");
         mSpinnerHour.setSelection(0);
         mSpinnerSecond.setSelection(0);
         mSpinnerMinute.setSelection(0);
+
+        alarmManager.cancel(pendingIntent);
+        pendingIntent.cancel();
+        mTextViewTimer.setText("Timer Finished");
+       /* mButtonStart.setEnabled(true);
+        mButtonStop.setEnabled(false);*/
+
     }
 
     @Override
     public void onDestroy() {
-        // Don't forget to shutdown tts!
-       /* if (mTextToSpeech != null) {
-            mTextToSpeech.stop();
-            mTextToSpeech.shutdown();
-        }*/
+        cleanUp();
         super.onDestroy();
     }
 
     @Override
     protected void onResume() {
-        //ttsSetup();
+
         super.onResume();
     }
 
 
     public void createAlarm(long mlongSec){
+        updatetext(mlongSec);
         Intent intent = new Intent(this, MyBroadcastReceiver.class);
         String text =  mEditText.getText().toString() + " Timer finished";
         intent.putExtra("TEXT",text);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this.getApplicationContext(), (int)System.currentTimeMillis(), intent, 0);
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        mIntPending = (int)System.currentTimeMillis();
+        pendingIntent = PendingIntent.getBroadcast(
+                this.getApplicationContext(),mIntPending, intent, 0);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + mlongSec
                 , pendingIntent);
+
     }
+
+
+    public void updatetext(long mlongSeconds){
+        new CountDownTimer(mlongSeconds, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                mTextViewTimer.setText("Seconds remaining : " + millisUntilFinished / 1000);
+
+            }
+
+            public void onFinish() {
+                mTextViewTimer.setText("Timer Finished");
+                cleanUp();
+            }
+        }.start();
+  }
+
 
 }

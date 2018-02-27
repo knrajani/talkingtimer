@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">TalkingTimer</string>
+    <string name="timer_note">Timer Note</string>
+    <string name="hour">Hour</string>
+    <string name="minute">Minute</string>
+    <string name="second">Second</string>
+    <string name="seconds_remaining">Seconds remaining: 0</string>
+
 </resources>

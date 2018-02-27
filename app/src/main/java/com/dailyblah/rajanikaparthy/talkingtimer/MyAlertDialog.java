@@ -7,6 +7,7 @@ import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
+import android.widget.Toast;
 
 import java.util.Locale;
 
@@ -18,23 +19,29 @@ public class MyAlertDialog extends AppCompatActivity implements TextToSpeech.OnI
     String displayStr = "";
     TextToSpeech mTextToSpeech;
     boolean mBooleanStop = false;
+    Locale current;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        current = getResources().getConfiguration().locale;
+        //Toast.makeText(getApplicationContext(),current.getLanguage()+current.getCountry(),Toast.LENGTH_LONG).show();
         Bundle extras = getIntent().getExtras();
-        displayStr = extras.getString("TEXT","Timer finished");
+        displayStr = extras.getString("TEXT","Timer Finished");
         setContentView(R.layout.activity_my_alert_dialog);
         showAlert();
-        mTextToSpeech=new TextToSpeech(this, this);
+
     }
 
     public void showAlert(){
+
+        mTextToSpeech=new TextToSpeech(this, this);
         mBooleanStop = false;
         AlertDialog.Builder Builder=new AlertDialog.Builder(this)
                 .setMessage(displayStr)
                 .setTitle("Timer Finished")
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(R.drawable.ic_notifications_active_black_24dp)
                 .setPositiveButton("Ok",new DialogInterface.OnClickListener()
                 {
                     public void onClick(DialogInterface dialog, int id)
@@ -51,15 +58,32 @@ public class MyAlertDialog extends AppCompatActivity implements TextToSpeech.OnI
     @Override
     public void onInit(final int status) {
         if(status != TextToSpeech.ERROR) {
-            mTextToSpeech.setLanguage(Locale.UK);
-            for(int i = 0; i < 100; i++)
-            if(!mBooleanStop)
-            {
-                mTextToSpeech.speak(displayStr, TextToSpeech.QUEUE_ADD, null);
+
+
+
+           /* if(mTextToSpeech.isLanguageAvailable(Locale.US) == 2){
+                mTextToSpeech.setLanguage(Locale.US);
+
             }
+            if(mTextToSpeech.isLanguageAvailable(Locale.UK) == 2){
+                mTextToSpeech.setLanguage(Locale.UK);
+
+            }*/
+            mTextToSpeech.setLanguage(new Locale(current.getLanguage(),current.getCountry()));
+
+            for(int i = 0; i < 100; i++)
+                if(!mBooleanStop)
+                {
+                    mTextToSpeech.speak(displayStr, TextToSpeech.QUEUE_ADD, null);
+                }
 
         }
+        else{
+            Toast.makeText(getApplicationContext(),"Error initializing text to speech",Toast.LENGTH_LONG).show();
+        }
     }
+
+
 
     @Override
     protected void onDestroy() {

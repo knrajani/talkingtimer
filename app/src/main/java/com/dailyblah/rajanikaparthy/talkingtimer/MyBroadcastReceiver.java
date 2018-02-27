@@ -16,27 +16,20 @@ import java.util.Locale;
 
 public class MyBroadcastReceiver extends BroadcastReceiver{//} implements TextToSpeech.OnInitListener{
 
-    //TextToSpeech mTextToSpeech;
     String mString = "Timer finished";
     @Override
     public void onReceive(final Context context, final Intent intent) {
-       // mTextToSpeech=new TextToSpeech(context.getApplicationContext(), this);
+
         mString = intent.getStringExtra("TEXT");
-        //Toast.makeText(context, mString, Toast.LENGTH_LONG).show();
         displayAlert(context.getApplicationContext(), mString);
     }
 
-  /*  @Override
-    public void onInit(final int status) {
-        if(status != TextToSpeech.ERROR) {
-            mTextToSpeech.setLanguage(Locale.UK);
-            mTextToSpeech.speak(mString, TextToSpeech.QUEUE_FLUSH, null);
-        }
-    }*/
 
     private void displayAlert(Context context, String string)
     {
         Intent i=new Intent(context,MyAlertDialog.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         i.putExtra("TEXT",string);
         context.startActivity(i);
     }
