@@ -27,7 +27,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver{//} implements TextTo
 
     private void displayAlert(Context context, String string)
     {
-        Intent i=new Intent(context,MyAlertDialog.class);git
+        Intent i=new Intent(context,MyAlertDialog.class);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         i.putExtra("TEXT",string);

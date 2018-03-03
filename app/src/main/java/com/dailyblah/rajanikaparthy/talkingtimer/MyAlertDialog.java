@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.widget.Toast;
+import com.dailyblah.rajanikaparthy.talkingtimer.R;
 
 import java.util.Locale;
 
@@ -36,7 +37,13 @@ public class MyAlertDialog extends AppCompatActivity implements TextToSpeech.OnI
 
     public void showAlert(){
 
-        mTextToSpeech=new TextToSpeech(this, this);
+        try {
+            mTextToSpeech = new TextToSpeech(this, this);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         mBooleanStop = false;
         AlertDialog.Builder Builder=new AlertDialog.Builder(this)
                 .setMessage(displayStr)

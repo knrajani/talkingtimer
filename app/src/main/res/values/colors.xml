@@ -12,6 +12,8 @@
     <color name="colorForeground">#84C6F2</color>
    <!-- 84C6F2 3BA3E9 FEE050-->
     <color name="colorBorders">#4A4A4A</color>
-    <color name="colorEnabled">#CCE9FD</color>
+    <color name="colorEnabled">#cce9fd</color>
+
+    <color name="colorRV">#f9e6a2</color>
 
 </resources>
