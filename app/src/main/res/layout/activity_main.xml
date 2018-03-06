@@ -201,6 +201,7 @@
             android:layout_marginStart="8dp"
             android:layout_weight="1"
             android:text="@string/seconds_remaining"
+            android:textAlignment="center"
             android:textColor="@color/colorBorders"
             android:textSize="24sp"
             android:textStyle="bold"

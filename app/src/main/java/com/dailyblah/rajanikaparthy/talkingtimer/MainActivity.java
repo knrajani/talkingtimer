@@ -2,6 +2,8 @@ package com.dailyblah.rajanikaparthy.talkingtimer;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -44,9 +46,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Spinner mSpinnerHour,mSpinnerMinute,mSpinnerSecond;
     long mHours,mMinutes,mSeconds = 0;
     CountDownTimer mCountDownTimer;
-    int mIntPending = 0;
+    /*int mIntPending = 0;
     PendingIntent pendingIntent;
-    AlarmManager alarmManager;
+    AlarmManager alarmManager;*/
     TextView mTextViewTimer;
     Button mButtonStart,mButtonStop;
 
@@ -57,8 +59,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     AddTimerViewModel addTimerViewModel;
     String timerStr;
     TimerModel deletetimerModel;
-
-    InputMethodManager imm;
+    LifecycleOwner myLife;
+   // InputMethodManager imm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,17 +75,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         addTimerViewModel = ViewModelProviders.of(this).get(AddTimerViewModel.class);
+        myLife = this;
+
 
         mButtonStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
 
-                createAlarm(Long.parseLong(getTimeSetting()), mEditText.getText().toString());
+               // createAlarm(Long.parseLong(getTimeSetting()), mEditText.getText().toString());
 
                 addTimerViewModel.addTimer(new TimerModel(
                         mEditText.getText().toString(),
                         getTimeValue()
                 ));
+                addTimerViewModel.getData().observe(myLife, new Observer<Long>() {
+                    public void onChanged(@Nullable final Long aLong) {
+
+                        mTextViewTimer.setText("Seconds remaining : " + String.valueOf(aLong));
+                        if(aLong == 0){
+                            mTextViewTimer.setText("Timer Finished");
+                        }
+                    }
+                });
 
               }
         });
@@ -200,8 +213,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         {
                             e.printStackTrace();
                         }
-
-
                         createAlarm(l,timerStr);
                         dialog.dismiss();
                     }
@@ -241,11 +252,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return String.valueOf(result);
     }
 
-    public String getTimeSetting(){
+   /* public String getTimeSetting(){
         long result = 0;
         result = mSeconds * 1000 + mMinutes * 60 * 1000 + mHours * 60 * 60 * 1000;
         return String.valueOf(result);
-    }
+    }*/
 
     public String getTimeValue(){
         return (String.valueOf(mHours) +":" + String.valueOf(mMinutes) +":" + String.valueOf(mSeconds));
@@ -257,10 +268,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSpinnerSecond.setSelection(0);
         mSpinnerMinute.setSelection(0);
 
-        if(alarmManager!=null && pendingIntent!=null) {
+       /* if(alarmManager!=null && pendingIntent!=null) {
             alarmManager.cancel(pendingIntent);
             pendingIntent.cancel();
-        }
+        }*/
         mTextViewTimer.setText("Timer Finished");
 
 
@@ -279,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public void createAlarm(long mlongSec, String timerString){
+   /* public void createAlarm(long mlongSec, String timerString){
         Intent intent = new Intent(this, MyBroadcastReceiver.class);
         String text =  timerString + " Timer finished";
         intent.putExtra("TEXT",text);
@@ -289,12 +300,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + mlongSec
                 , pendingIntent);
-        updatetext(mlongSec);
+       // updatetext(mlongSec);
 
-    }
+    }*/
 
 
-    public void updatetext(long mlongSeconds){
+    /*public void updatetext(long mlongSeconds){
         new CountDownTimer(mlongSeconds, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -307,18 +318,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cleanUp();
             }
         }.start();
-  }
-
-
-    /*public void showKeyboard() {
-        this.requestFocus()
-        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
-    }
-
-    public void hideKeyboard() {
-        val inputMethodManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(windowToken, 0)
     }*/
+
 
 }
