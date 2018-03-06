@@ -84,7 +84,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                // createAlarm(Long.parseLong(getTimeSetting()), mEditText.getText().toString());
 
-                addTimerViewModel.addTimer(new TimerModel(
+                TimerModel tmdl = new TimerModel(
+                        mEditText.getText().toString(),
+                        getTimeValue());
+                createAlarmAdd(tmdl);
+
+                /*addTimerViewModel.addTimer(new TimerModel(
                         mEditText.getText().toString(),
                         getTimeValue()
                 ));
@@ -96,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             mTextViewTimer.setText("Timer Finished");
                         }
                     }
-                });
+                });*/
 
               }
         });
@@ -206,14 +211,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     public void onClick(DialogInterface dialog, int id)
                     {
-                        long l = 1;
+                        createAlarmAdd(deletetimerModel);
+                       /* long l = 1;
                         try{
                             l = Long.parseLong(TimeToString(deletetimerModel.getTimerTime()));
                         }catch(Exception e)
                         {
                             e.printStackTrace();
                         }
-                        createAlarm(l,timerStr);
+                        createAlarm(l,timerStr);*/
                         dialog.dismiss();
                     }
                 })
@@ -239,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //return true;
     }
 
-    public String TimeToString(String str){
+   /* public String TimeToString(String str){
         long result = 0;
         try{
             String td[] = str.split(":");
@@ -250,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         return String.valueOf(result);
-    }
+    }*/
 
    /* public String getTimeSetting(){
         long result = 0;
@@ -320,5 +326,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.start();
     }*/
 
+
+    public void createAlarmAdd(TimerModel tmd)
+    {
+        addTimerViewModel.addTimer(tmd);
+        addTimerViewModel.getData().observe(myLife, new Observer<Long>() {
+            public void onChanged(@Nullable final Long aLong) {
+
+                mTextViewTimer.setText("Seconds remaining : " + String.valueOf(aLong));
+                if(aLong == 0){
+                    mTextViewTimer.setText("Timer Finished");
+                }
+            }
+        });
+    }
 
 }
