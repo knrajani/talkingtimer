@@ -1,4 +1,4 @@
-package com.dailyblah.rajanikaparthy.listitem;
+package com.dailyblah.rajanikaparthy.talkingtimer;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,9 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.dailyblah.rajanikaparthy.roomdb.DateConverter;
 import com.dailyblah.rajanikaparthy.roomdb.TimerModel;
-import com.dailyblah.rajanikaparthy.talkingtimer.R;
 
 import java.util.List;
 

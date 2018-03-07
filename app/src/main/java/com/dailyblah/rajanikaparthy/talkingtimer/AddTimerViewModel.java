@@ -1,4 +1,4 @@
-package com.dailyblah.rajanikaparthy.listitem;
+package com.dailyblah.rajanikaparthy.talkingtimer;
 
 import android.app.AlarmManager;
 import android.app.Application;
@@ -16,6 +16,8 @@ import com.dailyblah.rajanikaparthy.roomdb.AppDatabase;
 import com.dailyblah.rajanikaparthy.roomdb.TimerModel;
 import com.dailyblah.rajanikaparthy.talkingtimer.MyBroadcastReceiver;
 
+import java.util.List;
+
 import static android.content.Context.ALARM_SERVICE;
 
 /**
@@ -30,10 +32,12 @@ public class AddTimerViewModel extends AndroidViewModel{
     AlarmManager alarmManager;
     long longTime = 0;
     private static MutableLiveData<Long> data = new MutableLiveData<Long>();
+    private final LiveData<List<TimerModel>> itemAndPersonList;
 
     public AddTimerViewModel(@NonNull final Application application) {
         super(application);
         appDatabase = AppDatabase.getDatabase(this.getApplication());
+        itemAndPersonList = appDatabase.itemAndPersonModel().getAllTimeredItems();
     }
 
     public void addTimer(final TimerModel timerModel) {
@@ -102,6 +106,30 @@ public class AddTimerViewModel extends AndroidViewModel{
         @Override
         protected Void doInBackground(final TimerModel... params) {
             db.itemAndPersonModel().addTimer(params[0]);
+            return null;
+        }
+
+    }
+
+    public LiveData<List<TimerModel>> getItemAndPersonList() {
+        return itemAndPersonList;
+    }
+
+    public void deleteItem(TimerModel timerModel) {
+        new deleteAsyncTask(appDatabase).execute(timerModel);
+    }
+
+    private static class deleteAsyncTask extends AsyncTask<TimerModel, Void, Void> {
+
+        private AppDatabase db;
+
+        deleteAsyncTask(AppDatabase appDatabase) {
+            db = appDatabase;
+        }
+
+        @Override
+        protected Void doInBackground(final TimerModel... params) {
+            db.itemAndPersonModel().deleteTimer(params[0]);
             return null;
         }
 

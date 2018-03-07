@@ -24,19 +24,15 @@ public class MyAlertDialog extends AppCompatActivity implements TextToSpeech.OnI
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         current = getResources().getConfiguration().locale;
-        //Toast.makeText(getApplicationContext(),current.getLanguage()+current.getCountry(),Toast.LENGTH_LONG).show();
         Bundle extras = getIntent().getExtras();
         displayStr = extras.getString("TEXT","Timer Finished");
         setContentView(R.layout.activity_my_alert_dialog);
         showAlert();
-
     }
 
     public void showAlert(){
-
         try {
             mTextToSpeech = new TextToSpeech(this, this);
         }
@@ -65,32 +61,17 @@ public class MyAlertDialog extends AppCompatActivity implements TextToSpeech.OnI
     @Override
     public void onInit(final int status) {
         if(status != TextToSpeech.ERROR) {
-
-
-
-           /* if(mTextToSpeech.isLanguageAvailable(Locale.US) == 2){
-                mTextToSpeech.setLanguage(Locale.US);
-
-            }
-            if(mTextToSpeech.isLanguageAvailable(Locale.UK) == 2){
-                mTextToSpeech.setLanguage(Locale.UK);
-
-            }*/
             mTextToSpeech.setLanguage(new Locale(current.getLanguage(),current.getCountry()));
-
             for(int i = 0; i < 100; i++)
                 if(!mBooleanStop)
                 {
                     mTextToSpeech.speak(displayStr, TextToSpeech.QUEUE_ADD, null);
                 }
-
         }
         else{
             Toast.makeText(getApplicationContext(),"Error initializing text to speech",Toast.LENGTH_LONG).show();
         }
     }
-
-
 
     @Override
     protected void onDestroy() {
